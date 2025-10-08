@@ -1,0 +1,38 @@
+Production Orchestration Flow
+
+While we are running dbt manually for now, here is the recommended architecture for a production-grade, automated orchestration flow at scale, using Google Cloud services.
+
+--------------------      --------------------      --------------------
+|   Data Sources   |----->|  Ingestion Layer   |----->|    Bronze Layer    |
+| (Game Servers,   |      | (Pub/Sub, Dataflow)|      | (BigQuery Raw Data)|
+|   Databases)     |      --------------------      --------------------
+--------------------                                       |
+                                                           v
+--------------------      --------------------      --------------------
+|  Orchestration   |<---->| Transformation     |<---->|   Silver & Gold  |
+| (Cloud Composer/ |      |      (dbt)         |      | (BigQuery Modeled)|
+|     Airflow)     |      --------------------      --------------------
+--------------------
+
+Step-by-step Flow:
+
+1.  **Ingestion:**
+    *   Real-time game events are published to a **Google Pub/Sub** topic.
+    *   A **Cloud Function** is triggered by new messages in Pub/Sub and streams the raw event data into the Bronze layer table in BigQuery.
+    *   Batch data from other sources is ingested using scheduled **Cloud Dataflow** jobs.
+
+2.  **Orchestration:**
+    *   A **Cloud Composer (managed Airflow)** DAG is scheduled to run periodically (e.g., hourly or daily).
+
+3.  **Transformation:**
+    *   The Airflow DAG triggers a `dbt run` command.
+    *   dbt then executes all the models to transform the data:
+        *   Bronze -> Silver: Raw data is cleaned and conformed.
+        *   Silver -> Gold: The dimensional model is built, and aggregated marts are created.
+    *   The key fact tables are updated incrementally.
+
+4.  **Data Quality:**
+    *   After the dbt run, the Airflow DAG triggers a `dbt test` command to run all data quality checks.
+    *   If the tests fail, Airflow can be configured to send an alert.
+
+This architecture is scalable, resilient, and provides excellent monitoring and observability for your data pipelines.

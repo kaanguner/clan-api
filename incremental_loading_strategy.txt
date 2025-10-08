@@ -1,0 +1,20 @@
+Incremental Loading Strategy
+
+To ensure the data warehouse is efficient and cost-effective to update, we have implemented an incremental loading strategy for the largest table, `fact_daily_user_activity`.
+
+How it works:
+
+1.  **dbt Materialization:** The `fact_daily_user_activity` model is configured in dbt with `materialized='incremental'`.
+
+2.  **Filtering New Data:** Inside the model's SQL code, there is a special block:
+    ```sql
+    {% if is_incremental() %}
+      where stg.event_date > (select max(created_at) from {{ this }})
+    {% endif %}
+    ```
+
+3.  **Execution Flow:**
+    *   **First Run:** When the table is built for the first time, the `is_incremental()` condition is false, so the entire table is built from the source data.
+    *   **Subsequent Runs:** On every subsequent `dbt run`, the `is_incremental()` condition is true. The `where` clause is activated, and it filters the source data to only include records where the `event_date` is newer than the most recent `created_at` timestamp already in the fact table.
+
+4.  **Benefit:** This means that dbt only processes and appends new data on each run, instead of rebuilding the entire table. For a table with millions or billions of rows, this dramatically reduces query costs and run times.

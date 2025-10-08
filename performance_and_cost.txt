@@ -1,0 +1,23 @@
+Performance & Cost Optimization Strategies
+
+The following strategies have been considered and implemented in our DWH architecture to ensure it is performant and cost-effective, especially at a large scale.
+
+1.  **Incremental Models:**
+    *   **Strategy:** The largest table, `fact_daily_user_activity`, is built as an incremental model.
+    *   **Benefit:** This significantly reduces the amount of data processed on each dbt run, leading to major cost savings and faster pipeline execution times.
+
+2.  **BigQuery Partitioning:**
+    *   **Strategy:** The fact table should be partitioned by date (e.g., the `created_at` column).
+    *   **Benefit:** When you query the table with a date filter, BigQuery will only scan the data in the relevant partitions, dramatically reducing query costs and improving performance.
+
+3.  **BigQuery Clustering:**
+    *   **Strategy:** The fact table can be clustered by commonly filtered columns, such as `platform_key` and `country_key`.
+    *   **Benefit:** Clustering co-locates data with the same values for the clustering columns, which can further improve query performance and reduce costs for queries that filter on these columns.
+
+4.  **Optimized Joins:**
+    *   **Strategy:** The dimensional model uses integer or surrogate keys for joins where possible.
+    *   **Benefit:** Joining on integer keys is generally more performant than joining on strings.
+
+5.  **Aggregated Marts:**
+    *   **Strategy:** We have created the `daily_metrics` table, which pre-aggregates data for common business queries.
+    *   **Benefit:** When analysts or BI tools query this table, the aggregations are already done, leading to much faster query times compared to querying the raw fact table every time.

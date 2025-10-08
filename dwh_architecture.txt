@@ -1,0 +1,36 @@
+DWH Architecture: Medallion Model
+
+This document describes the Data Warehouse architecture, which follows the Medallion model (Bronze, Silver, Gold).
+
+---------------------------------
+|         BRONZE LAYER          |
+| (Raw, Untouched Source Data)  |
+---------------------------------
+             |
+             v
+---------------------------------
+|         SILVER LAYER          |
+| (Cleaned, Conformed Data)     |
+---------------------------------
+             |
+             v
+---------------------------------
+|          GOLD LAYER           |
+| (Analytics-Ready Data Marts)  |
+---------------------------------
+
+Data Flow:
+
+1.  **Bronze Layer:**
+    *   Table: `raw_user_metrics`
+    *   Description: Raw, immutable data ingested directly from the source systems.
+
+2.  **Silver Layer:**
+    *   Table: `stg_user_daily_metrics`
+    *   Description: Data from the Bronze layer is cleaned, standardized, and prepared for modeling. This includes casting data types, renaming columns, and basic data quality checks.
+
+3.  **Gold Layer:**
+    *   Tables: `dim_date`, `dim_platform`, `dim_country`, `dim_user`, `fact_daily_user_activity`
+    *   Description: This is the dimensional model (star schema) that serves as the primary data mart for analytics. It's optimized for querying and easy to understand for business users.
+    *   Table: `daily_metrics`
+    *   Description: An aggregated mart built on top of the dimensional model, providing pre-calculated business metrics like DAU and ARPDAU for reporting and dashboards.
