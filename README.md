@@ -146,3 +146,7 @@ This project is a simple REST API for managing gaming clans, built with FastAPI 
       --add-cloudsql-instances [PROJECT_ID]:[REGION]:[INSTANCE_NAME]
     ```
     Replace `[PROJECT_ID]`, `[REGION]`, and `[INSTANCE_NAME]` with your Google Cloud project details.
+
+## Live API URL
+
+The deployed API can be accessed at: `https://clan-api-5rniilfbia-ez.a.run.app`
