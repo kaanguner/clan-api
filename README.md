@@ -91,8 +91,7 @@ This project is a simple REST API for managing gaming clans, built with FastAPI 
           "name": "Shadow Warriors",
           "region": "TR",
           "created_at": "2023-10-27T10:00:00Z"
-        },
-        ...
+        }
       ]
     }
     ```
