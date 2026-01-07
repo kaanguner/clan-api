@@ -49,6 +49,11 @@ The DBT code was previously maintained in a separate repository [`clan-analytics
 │           ├── daily_metrics.sql    # Main aggregation model
 │           └── schema.yml           # Model documentation & tests
 │
+├── scripts/
+│   └── create_bq_table.py       # BigQuery external table creator
+│
+├── CHANGELOG.md                  # Version history
+├── IMPROVEMENTS.md               # Future optimization ideas
 └── README.md
 ```
 
