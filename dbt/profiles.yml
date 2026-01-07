@@ -1,0 +1,14 @@
+# DBT Profile Configuration for Vertigo Games
+# Uses gcloud oauth for authentication
+
+vertigo_games:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: vertigo-games-case-2026
+      dataset: vertigo_analytics
+      threads: 4
+      timeout_seconds: 300
+      location: EU

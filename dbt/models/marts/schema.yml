@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: daily_metrics
+    description: |
+      Aggregated daily metrics for business reporting.
+      Summarizes gameplay, monetization, and performance signals per day, country, and platform.
+    columns:
+      - name: event_date
+        description: "Date of activity"
+        tests:
+          - not_null
+      - name: country
+        description: "User's country (UNKNOWN for missing values)"
+        tests:
+          - not_null
+      - name: platform
+        description: "User's platform (ANDROID/IOS)"
+        tests:
+          - not_null
+      - name: dau
+        description: "Daily Active Users - count of distinct users"
+        tests:
+          - not_null
+      - name: total_iap_revenue
+        description: "Sum of in-app purchase revenue"
+      - name: total_ad_revenue
+        description: "Sum of advertisement revenue"
+      - name: arpdau
+        description: "Average Revenue Per Daily Active User = (iap + ad) / dau"
+      - name: matches_started
+        description: "Sum of matches started"
+      - name: match_per_dau
+        description: "Average matches started per DAU = matches_started / dau"
+      - name: win_ratio
+        description: "Ratio of victories to matches ended = victory_count / match_end_count"
+      - name: defeat_ratio
+        description: "Ratio of defeats to matches ended = defeat_count / match_end_count"
+      - name: server_error_per_dau
+        description: "Server connection errors per DAU = server_connection_error / dau"

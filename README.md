@@ -1,152 +1,243 @@
-# Clan Management API
+# Vertigo Games - Data Engineer Case Study
 
-This project is a simple REST API for managing gaming clans, built with FastAPI and deployed on Google Cloud Run.
+> **Version 2.0.0** - Unified project structure (API + DBT)
 
-## Features
+A comprehensive solution for the Vertigo Games Data Engineer case study, including a **Clan Backend API** (Part 1) and **DBT Analytics Model** (Part 2).
 
-*   Create a new clan.
-*   List all clans, with filtering by region and sorting.
-*   Get the details of a specific clan.
-*   Delete a clan.
+## ⚠️ Note on Previous Repository
 
-## Tech Stack
+The DBT code was previously maintained in a separate repository [`clan-analytics-dbt`](https://github.com/kaanguner/clan-analytics-dbt). **As of v2.0.0, that repository is deprecated.** All code (API + DBT) is now unified in this single repository.
 
-*   **Backend:** Python 3.11, FastAPI
-*   **Database:** PostgreSQL (designed for Cloud SQL)
-*   **Deployment:** Docker, Google Cloud Run
+## 📋 Table of Contents
 
-## Local Development Setup
+- [Project Structure](#project-structure)
+- [Part 1: Clan Backend API](#part-1-clan-backend-api)
+- [Part 2: DBT Model & Visualization](#part-2-dbt-model--visualization)
+- [Methodology & Assumptions](#methodology--assumptions)
+- [Screenshots](#screenshots)
+- [Quick Start](#quick-start)
 
-1.  **Prerequisites:**
-    *   Python 3.11
-    *   Docker
-    *   A running PostgreSQL instance.
+---
 
-2.  **Clone the repository:**
-    ```bash
-    git clone <your-repo-url>
-    cd clan-api
-    ```
+## 📁 Project Structure
 
-3.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
+```
+├── api/                          # Part 1: Clan Backend API
+│   ├── app/
+│   │   ├── main.py              # FastAPI application entry point
+│   │   ├── config.py            # Configuration management
+│   │   ├── database.py          # Database connection (local + Cloud SQL)
+│   │   ├── models.py            # SQLAlchemy ORM models
+│   │   ├── schemas.py           # Pydantic request/response schemas
+│   │   └── routes/
+│   │       └── clans.py         # Clan CRUD endpoints
+│   ├── scripts/
+│   │   ├── load_sample_data.py  # Sample data loader
+│   │   ├── setup_cloud_sql.sh   # Cloud SQL setup script
+│   │   └── deploy.sh            # Cloud Run deployment script
+│   ├── Dockerfile               # Production Docker image
+│   ├── docker-compose.yml       # Local development setup
+│   └── requirements.txt
+│
+├── dbt/                          # Part 2: DBT Analytics
+│   ├── dbt_project.yml
+│   ├── profiles.yml.example
+│   └── models/
+│       ├── sources.yml          # Source definitions
+│       └── marts/
+│           ├── daily_metrics.sql    # Main aggregation model
+│           └── schema.yml           # Model documentation & tests
+│
+└── README.md
+```
 
-4.  **Set up the database:**
-    *   Create a PostgreSQL database.
-    *   Run the `schema.sql` file to create the `clans` table.
+---
 
-5.  **Configure environment variables:**
-    *   Create a `.env` file in the root of the project.
-    *   Add the following variables to the `.env` file, replacing the values with your local database credentials:
-        ```
-        DB_USER=your_db_user
-        DB_PASSWORD=your_db_password
-        DB_HOST=localhost
-        DB_PORT=5432
-        DB_NAME=your_db_name
-        ```
+## 🎮 Part 1: Clan Backend API
 
-6.  **Run the application:**
-    ```bash
-    uvicorn app.main:app --reload
-    ```
-    The API will be available at `http://127.0.0.1:8000`.
+A REST API for managing game clans, built with **FastAPI** and deployed on **Google Cloud Run** with **Cloud SQL (PostgreSQL)**.
 
-## API Endpoints
+### API Endpoints
 
-### Create a Clan
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/clans` | Create a new clan |
+| `GET` | `/clans` | List all clans |
+| `GET` | `/clans/search?name=xxx` | Search clans by name (min 3 chars) |
+| `DELETE` | `/clans/{id}` | Delete a clan by UUID |
 
-*   **URL:** `/clans`
-*   **Method:** `POST`
-*   **Body:**
-    ```json
-    {
-      "name": "Shadow Warriors",
-      "region": "TR"
-    }
-    ```
-*   **Response:**
-    ```json
-    {
-      "id": "generated-uuid",
-      "message": "Clan created successfully."
-    }
-    ```
+### Clan Schema
 
-### List Clans
+```json
+{
+  "id": "uuid",
+  "name": "string (required)",
+  "region": "string (e.g., 'TR', 'US')",
+  "created_at": "timestamp (UTC, auto-generated)"
+}
+```
 
-*   **URL:** `/clans`
-*   **Method:** `GET`
-*   **Query Parameters:**
-    *   `region` (optional): Filter by region (e.g., `?region=TR`).
-    *   `sort_by` (optional): Sort by `created_at`, `name`, `region`, or `id` (e.g., `?sort_by=name`).
-*   **Response:**
-    ```json
-    {
-      "clans": [
-        {
-          "id": "uuid-1",
-          "name": "Shadow Warriors",
-          "region": "TR",
-          "created_at": "2023-10-27T10:00:00Z"
-        }
-      ]
-    }
-    ```
+### Local Development
 
-### Get a Clan
+```bash
+# Start local PostgreSQL and API with Docker Compose
+cd api
+docker-compose up -d
 
-*   **URL:** `/clans/{clan_id}`
-*   **Method:** `GET`
-*   **Response:**
-    ```json
-    {
-      "clan": {
-        "id": "uuid-1",
-        "name": "Shadow Warriors",
-        "region": "TR",
-        "created_at": "2023-10-27T10:00:00Z"
-      }
-    }
-    ```
+# API will be available at http://localhost:8080
+# Docs at http://localhost:8080/docs
+```
 
-### Delete a Clan
+### Deploy to Google Cloud
 
-*   **URL:** `/clans/{clan_id}`
-*   **Method:** `DELETE`
-*   **Response:**
-    ```json
-    {
-      "message": "Clan deleted successfully"
-    }
-    ```
+```bash
+# 1. Set up Cloud SQL instance
+export GCP_PROJECT_ID="your-project-id"
+export GCP_REGION="europe-west1"
+./scripts/setup_cloud_sql.sh
 
-## Deployment to Google Cloud Run
+# 2. Deploy to Cloud Run
+./scripts/deploy.sh
+```
 
-1.  **Prerequisites:**
-    *   Google Cloud SDK (`gcloud`) installed and configured.
-    *   A Google Cloud project with Cloud Build, Cloud Run, and Cloud SQL APIs enabled.
-    *   A Cloud SQL for PostgreSQL instance created.
-    *   The database password stored in Google Secret Manager.
+### API Examples
 
-2.  **Build the Docker image:**
-    ```bash
-    gcloud builds submit --tag gcr.io/[PROJECT_ID]/clan-api
-    ```
+```bash
+# Create a clan
+curl -X POST http://localhost:8080/clans \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Phoenix Warriors", "region": "TR"}'
 
-3.  **Deploy to Cloud Run:**
-    ```bash
-    gcloud run deploy clan-api \
-      --image gcr.io/[PROJECT_ID]/clan-api \
-      --platform managed \
-      --region us-central1 \
-      --allow-unauthenticated \
-      --add-cloudsql-instances [PROJECT_ID]:[REGION]:[INSTANCE_NAME]
-    ```
-    Replace `[PROJECT_ID]`, `[REGION]`, and `[INSTANCE_NAME]` with your Google Cloud project details.
+# List all clans
+curl http://localhost:8080/clans
 
-## Live API URL
+# Search clans (min 3 characters)
+curl "http://localhost:8080/clans/search?name=Phoe"
 
-The deployed API can be accessed at: `https://clan-api-5rniilfbia-ez.a.run.app`
+# Delete a clan
+curl -X DELETE http://localhost:8080/clans/{uuid}
+```
+
+---
+
+## 📊 Part 2: DBT Model & Visualization
+
+### Data Model: `daily_metrics`
+
+Aggregates user-level daily metrics by **event_date**, **country**, and **platform**.
+
+| Field | Description | Calculation |
+|-------|-------------|-------------|
+| `dau` | Daily Active Users | `COUNT(DISTINCT user_id)` |
+| `total_iap_revenue` | In-app purchase revenue | `SUM(iap_revenue)` |
+| `total_ad_revenue` | Ad revenue | `SUM(ad_revenue)` |
+| `arpdau` | Avg Revenue Per DAU | `(iap + ad) / dau` |
+| `matches_started` | Total matches started | `SUM(match_start_count)` |
+| `match_per_dau` | Matches per user | `matches_started / dau` |
+| `win_ratio` | Win percentage | `victories / matches_ended` |
+| `defeat_ratio` | Defeat percentage | `defeats / matches_ended` |
+| `server_error_per_dau` | Errors per user | `server_errors / dau` |
+
+### BigQuery Setup
+
+```bash
+# 1. Create BigQuery dataset
+bq mk --location=europe-west1 vertigo_raw
+
+# 2. Upload CSV data to BigQuery
+# Uncompress CSV files and upload using bq load or Cloud Console
+
+# 3. Configure DBT profile (copy profiles.yml.example to ~/.dbt/profiles.yml)
+
+# 4. Run DBT
+cd dbt
+dbt run
+```
+
+### Visualization
+
+Dashboard created in **Looker Studio** showing:
+- Daily Active Users trend
+- Revenue breakdown (IAP vs Ad)
+- ARPDAU over time
+- Win/Defeat ratios by platform
+- Server errors monitoring
+
+---
+
+## 🔬 Methodology & Assumptions
+
+### Data Quality Considerations
+
+1. **Missing Country Values**: Rows with NULL or empty country are mapped to `'UNKNOWN'`
+2. **Platform Normalization**: Platform values are uppercased (ANDROID/IOS)
+3. **Division by Zero**: All ratio calculations handle zero denominators gracefully
+4. **UTC Timestamps**: All timestamps stored and processed in UTC
+
+### Design Decisions
+
+1. **FastAPI over Flask**: Chosen for automatic OpenAPI docs, async support, and type validation
+2. **UUID Primary Keys**: Using UUID v4 for clan IDs to prevent enumeration attacks
+3. **Cloud SQL Connector**: Uses Google's official connector for secure Cloud Run integration
+4. **DBT Partitioning**: Model is partitioned by event_date for efficient querying
+
+### Assumptions
+
+- Users can appear in multiple countries/platforms on the same day (aggregated separately)
+- Win + Defeat may not equal match_end_count (draws, disconnects exist)
+- Server errors are counted regardless of session status
+
+---
+
+## 📸 Screenshots
+
+> **Note**: Add Looker Studio dashboard screenshots here after creating the visualization.
+
+### API Documentation (Swagger UI)
+<!-- Add screenshot of /docs endpoint -->
+
+### Looker Studio Dashboard
+<!-- Add dashboard screenshots showing:
+- DAU trend chart
+- Revenue breakdown
+- Platform comparison
+-->
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Docker & Docker Compose
+- Python 3.11+
+- Google Cloud SDK (`gcloud`)
+- DBT Core with BigQuery adapter
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/your-username/vertigo-games-case.git
+cd vertigo-games-case
+
+# Part 1: Start local API
+cd api
+docker-compose up -d
+
+# Part 2: Run DBT model (requires BigQuery setup)
+cd ../dbt
+dbt deps
+dbt run
+```
+
+---
+
+## 📄 License
+
+This project is part of a case study for Vertigo Games.
+
+---
+
+**Author**: Kaan Guner  
+**Version**: v2.0.0

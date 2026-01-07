@@ -1,0 +1,25 @@
+# Example DBT Profile Configuration
+# Copy to ~/.dbt/profiles.yml and update with your BigQuery credentials
+
+vertigo_games:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: your-gcp-project-id
+      dataset: vertigo_games_dev
+      threads: 4
+      timeout_seconds: 300
+      location: europe-west1
+      keyfile: /path/to/your/service-account-key.json
+      
+    prod:
+      type: bigquery
+      method: service-account
+      project: your-gcp-project-id
+      dataset: vertigo_games_prod
+      threads: 4
+      timeout_seconds: 300
+      location: europe-west1
+      keyfile: /path/to/your/service-account-key.json

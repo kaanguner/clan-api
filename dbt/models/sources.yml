@@ -1,0 +1,39 @@
+version: 2
+
+sources:
+  - name: raw
+    description: "Raw data tables containing user-level daily metrics"
+    database: "vertigo-games-case-2026"
+    schema: vertigo_raw
+    tables:
+      - name: user_daily_metrics
+        description: "User-level daily metrics including sessions, matches, revenue, and errors"
+        columns:
+          - name: user_id
+            description: "Unique user identifier"
+          - name: event_date
+            description: "Date of activity"
+          - name: install_date
+            description: "Date when user installed the game"
+          - name: platform
+            description: "User's platform (ANDROID/IOS)"
+          - name: country
+            description: "User's country"
+          - name: total_session_count
+            description: "Total number of sessions that day"
+          - name: total_session_duration
+            description: "Total time spent in sessions (seconds)"
+          - name: match_start_count
+            description: "Number of matches started"
+          - name: match_end_count
+            description: "Number of matches completed"
+          - name: victory_count
+            description: "Number of matches won"
+          - name: defeat_count
+            description: "Number of matches lost"
+          - name: server_connection_error
+            description: "Count of server connection failures"
+          - name: iap_revenue
+            description: "In-app purchase revenue"
+          - name: ad_revenue
+            description: "Advertisement revenue"
