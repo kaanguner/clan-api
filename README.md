@@ -58,6 +58,14 @@ The DBT code was previously maintained in a separate repository [`clan-analytics
 
 A REST API for managing game clans, built with **FastAPI** and deployed on **Google Cloud Run** with **Cloud SQL (PostgreSQL)**.
 
+### 🌐 Live API
+
+| | URL |
+|--|-----|
+| **Swagger UI** | https://clan-api-1076195585386.europe-west1.run.app/docs |
+| **ReDoc** | https://clan-api-1076195585386.europe-west1.run.app/redoc |
+| **Health Check** | https://clan-api-1076195585386.europe-west1.run.app/health |
+
 ### API Endpoints
 
 | Method | Endpoint | Description |
