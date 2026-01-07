@@ -198,22 +198,6 @@ Dashboard created in **Looker Studio** showing:
 
 ---
 
-## 📸 Screenshots
-
-> **Note**: Add Looker Studio dashboard screenshots here after creating the visualization.
-
-### API Documentation (Swagger UI)
-<!-- Add screenshot of /docs endpoint -->
-
-### Looker Studio Dashboard
-<!-- Add dashboard screenshots showing:
-- DAU trend chart
-- Revenue breakdown
-- Platform comparison
--->
-
----
-
 ## 🚀 Quick Start
 
 ### Prerequisites
