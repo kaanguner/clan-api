@@ -219,7 +219,7 @@ Dashboard created in **Looker Studio** showing:
 
 ```bash
 # Clone repository
-git clone https://github.com/your-username/vertigo-games-case.git
+git clone https://github.com/kaanguner/clan-api.git
 cd vertigo-games-case
 
 # Part 1: Start local API
