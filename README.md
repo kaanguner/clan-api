@@ -16,6 +16,7 @@ The DBT code was previously maintained in a separate repository [`clan-analytics
 - [Methodology & Assumptions](#methodology--assumptions)
 - [Screenshots](#screenshots)
 - [Quick Start](#quick-start)
+- [Future Improvements](IMPROVEMENTS.md)
 
 ---
 
