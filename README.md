@@ -214,6 +214,19 @@ Dashboard created in **Looker Studio** showing:
 3. **Cloud SQL Connector**: Uses Google's official connector for secure Cloud Run integration
 4. **DBT Partitioning**: Model is partitioned by event_date for efficient querying
 
+### A Note on DBT & Containerization
+
+> **Why isn't DBT separately dockerized?**
+>
+> In enterprise data engineering (e.g., at Booking.com), DBT typically runs as a **CLI tool inside orchestrated containers** rather than having its own standalone Dockerfile. The pattern is:
+>
+> - **Local Development**: DBT runs inside VS Code Dev Containers with pre-configured tooling
+> - **Production**: Kubernetes orchestrators (Airflow, WFM) execute DBT as containerized jobs, where the container image includes dbt-core and the project code is mounted via CI/CD
+>
+> For this case study, DBT executes against **BigQuery** (a serverless warehouse), meaning the compute happens server-side. Containerizing DBT would add operational overhead without meaningful benefit—the SQL transformation logic is what matters, not the thin CLI wrapper.
+>
+> The API, by contrast, is a **long-running service** that must be deployed as a container to Cloud Run. This distinction drives the architecture: **services get Dockerfiles, batch CLI tools get orchestrated**.
+
 ### Assumptions
 
 - Users can appear in multiple countries/platforms on the same day (aggregated separately)
