@@ -8,6 +8,13 @@ A comprehensive solution for the Vertigo Games Data Engineer case study, includi
 
 The DBT code was previously maintained in a separate repository [`clan-analytics-dbt`](https://github.com/kaanguner/clan-analytics-dbt). **As of v2.0.0, that repository is deprecated.** All code (API + DBT) is now unified in this single repository.
 
+### Version History
+
+| Version | Description |
+|---------|-------------|
+| **v1.0** | Initial release with API-only in `clan-api` repository |
+| **v2.0.0** | Unified API + DBT into single repo (breaking structural change, hence major version bump) |
+
 ## 📋 Table of Contents
 
 - [Project Structure](#project-structure)
@@ -175,7 +182,19 @@ Dashboard created in **Looker Studio** showing:
 - Revenue breakdown (IAP vs Ad)
 - ARPDAU over time
 - Win/Defeat ratios by platform
-- Server errors monitoring
+- Platform distribution
+
+📊 **[View Live Dashboard](https://lookerstudio.google.com/reporting/15107180-9e15-4fa5-9517-2fea4a952a65)**
+
+---
+
+## 📸 Screenshots
+
+### Looker Studio Dashboard
+
+![Looker Studio Dashboard](docs/screenshots/looker_dashboard.png)
+
+*Dashboard showing DAU (7.3M), Matches Started (34.5M), ARPDAU (1,686), Revenue Trends, Platform Split, and Win/Defeat Ratios.*
 
 ---
 
